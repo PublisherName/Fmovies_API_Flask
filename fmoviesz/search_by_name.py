@@ -1,7 +1,16 @@
 '''Search module'''
 
+import os
+from dotenv import load_dotenv
+from flask import Blueprint
 import requests
 from bs4 import BeautifulSoup
+
+load_dotenv()
+
+FM_URL = os.getenv('FM_URL')
+
+search_by_name_bp = Blueprint('search_by_name', __name__)
 
 
 def create_item(div) -> dict:
@@ -9,7 +18,7 @@ def create_item(div) -> dict:
     quality = div.find('div', class_='quality').text
     poster_div = div.find('div', class_='poster')
     poster = poster_div.find('img')['data-src']
-    link = "https://fmoviesz.to" + poster_div.find('a')['href']
+    link = f"{FM_URL}" + poster_div.find('a')['href']
     title = div.find('div', class_='meta').find('a').text
     release_date = div.find('div', class_='meta').find('span').text
     type_span = div.find('div', class_='meta').find('span', class_='type')
@@ -32,7 +41,7 @@ def create_item(div) -> dict:
 
 def scrap_fmoviesz_by_name(name: str) -> dict:
     '''Get the list of movies from fmoviesz.to based on the movie name.'''
-    url = f"https://fmoviesz.to/filter?keyword={name}"
+    url = f"{FM_URL}/filter?keyword={name}"
     try:
         response = requests.get(url, timeout=10)
         response.raise_for_status()
