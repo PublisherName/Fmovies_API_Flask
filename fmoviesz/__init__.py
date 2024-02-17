@@ -1,3 +1,17 @@
-''' This file is used to import the blueprints and register them with the app.'''
+''' This file is the entry point of the application. '''
 
-from .search_by_name import search_by_name_bp
+from flask import Flask
+from flask_restful import Api
+from .resources import SearchMediaByName, Home
+
+
+def create_app():
+    '''Create the application.'''
+
+    app = Flask(__name__)
+    api = Api(app)
+
+    api.add_resource(SearchMediaByName, '/media/searchByName')
+    api.add_resource(Home, '/')
+
+    return app

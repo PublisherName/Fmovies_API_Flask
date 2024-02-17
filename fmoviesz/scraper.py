@@ -1,19 +1,11 @@
-'''Search module'''
+'''Scraper module'''
 
-import os
-from dotenv import load_dotenv
-from flask import Blueprint
 import requests
 from bs4 import BeautifulSoup
-
-load_dotenv()
-
-FM_URL = os.getenv('FM_URL')
-
-search_by_name_bp = Blueprint('search_by_name', __name__)
+from .settings import FM_URL
 
 
-def create_item(div) -> dict:
+def create_media_dict_from_div(div) -> dict:
     '''Create a dictionary of the movie item.'''
     quality = div.find('div', class_='quality').text
     poster_div = div.find('div', class_='poster')
@@ -54,4 +46,4 @@ def scrap_fmoviesz_by_name(name: str) -> dict:
     except (BeautifulSoup.FeatureNotFound, AttributeError) as e:
         return {'error': str(e)}
 
-    return {'media': [create_item(div) for div in movie_divs]}
+    return {'media': [create_media_dict_from_div(div) for div in movie_divs]}
