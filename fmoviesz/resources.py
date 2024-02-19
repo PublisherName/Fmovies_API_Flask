@@ -3,7 +3,7 @@
 from flask_restful import Resource
 from flask import request, current_app
 
-from .scraper import scrap_fmoviesz_by_name
+from .scraper import FmovieszScraper
 
 
 class Home(Resource):
@@ -26,10 +26,13 @@ class Home(Resource):
 class SearchMediaByName(Resource):
     ''' This class represents the search by name endpoint.'''
 
+    def __init__(self) -> None:
+        self.scrapper = FmovieszScraper()
+
     def get(self):
         '''Search for media by title.'''
         name = request.args.get('name', default='')
         if not name:
             return {'error': 'name is required'}, 400
-        media = scrap_fmoviesz_by_name(name)
+        media = self.scrapper.by_name(name)
         return media, 200
