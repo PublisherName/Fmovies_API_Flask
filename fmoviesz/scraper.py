@@ -18,7 +18,7 @@ class FmovieszScraper(HtmlParser):
     def by_recommendation(self) -> dict:
         '''Get the list of medias from fmoviesz.to based on the recommendation.'''
         url = f"{FM_URL}/home"
-        return self.get_media(url)
+        return self.get_media(url, ['movies', 'shows'])
 
     def by_name(self, name: str) -> dict:
         '''Get the list of medias from fmoviesz.to based on the movie name.'''

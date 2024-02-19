@@ -19,11 +19,20 @@ class HtmlParser:
             return {'error': str(e)}
 
     @staticmethod
-    def parse_html(html: str) -> list:
+    def parse_html(html: str, suggestion: list) -> list:
         '''Parse the HTML content and return the movie divs.'''
         try:
             soup = BeautifulSoup(html, 'html.parser')
+
+            if suggestion:
+                soup = soup.find_all(lambda tag: tag.name == 'div' and
+                                     tag.get('class') == ['tab-content'] and
+                                     tag.get('data-name') in suggestion)
+                return [item for div in soup for item in div.find_all(
+                    'div', class_='item')]
+
             return soup.find_all('div', class_='item')
+
         except (BeautifulSoup.FeatureNotFound, AttributeError) as e:
             return {'error': str(e)}
 
@@ -57,12 +66,12 @@ class HtmlParser:
         }
 
     @staticmethod
-    def get_media(url: str) -> dict:
+    def get_media(url: str, suggestion: list = None) -> dict:
         '''Get the list of media from the specified URL.'''
         html = HtmlParser.get_html(url)
         if 'error' in html:
             return html
-        movie_divs = HtmlParser.parse_html(html)
+        movie_divs = HtmlParser.parse_html(html, suggestion)
         if 'error' in movie_divs:
             return movie_divs
         return {'media': [HtmlParser.create_media_dict_from_div(div) for div in movie_divs]}
