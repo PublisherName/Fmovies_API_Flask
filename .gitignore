@@ -123,3 +123,4 @@ dmypy.json
 cython_debug/
 
 !fmoviesz/.env
+page.html
