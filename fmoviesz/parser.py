@@ -46,11 +46,11 @@ class HtmlParser:
             episode = div.find('div', class_='meta').find_all('span')[-1].text
 
         return {
-            'quality': quality,
-            'poster': poster,
             'title': title,
-            'release_date': release_date,
             'type': item_type,
+            'quality': quality,
+            'release_date': release_date,
+            'poster': poster,
             'season': season,
             'episode': episode,
             'link': link
