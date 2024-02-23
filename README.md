@@ -13,4 +13,14 @@ This is a basic fmovies api that allows you to search for movies and tv shows an
 
     pip install -r requirements.txt
 
+## Usage
+
     gunicorn --reload app:app
+
+## Endpoints
+
+    - /media/trending
+
+    - /media/recommendation
+    
+    - /media/searchByName?name=<movie_name>
