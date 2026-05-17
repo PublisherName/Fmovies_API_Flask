@@ -1,0 +1,57 @@
+# Docs for the Azure Web Apps Deploy action: https://github.com/Azure/webapps-deploy
+# More GitHub Actions for Azure: https://github.com/Azure/actions
+# More info on Python, GitHub Actions, and Azure App Service: https://aka.ms/python-webapps-actions
+
+name: Test Flask App
+
+on:
+  push:
+    branches:
+      - develop
+  workflow_dispatch:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python version
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v5
+        with:
+          version: '0.9.5'
+          enable-cache: true
+      
+      - name: Cache uv dependencies
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cache/uv
+            .venv
+          key: ${{ runner.os }}-uv-${{ hashFiles('uv.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-uv-
+      
+      - name: Install dependencies
+        run: uv sync --frozen
+      
+      - name: Check Flask app
+        run: |
+            uv run flask run --host=0.0.0.0 --port=5000 &
+            FLASK_PID=$!
+
+            for i in $(seq 1 15); do
+              curl -s http://127.0.0.1:5000 && break
+              sleep 1
+              kill -0 $FLASK_PID 2>/dev/null || exit 1
+            done
+
+            curl --fail http://127.0.0.1:5000 || exit 1
+            kill $FLASK_PID
+            
