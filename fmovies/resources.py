@@ -3,42 +3,38 @@ from flask import request, current_app
 
 from .scraper import fmoviesScraper
 
+_scraper = fmoviesScraper()
 
-class BaseMediaResource(Resource):
-    def __init__(self) -> None:
-        self.scraper = fmoviesScraper()
 
-    def get_routes(self):
-        return {
-            f"{request.url_root[:-1]}{str(rule)}": str(rule.methods)
+class Home(Resource):
+    def get(self):
+        routes = {
+            f"{request.url_root[:-1]}{rule}": str(rule.methods)
             for rule in current_app.url_map.iter_rules()
             if rule.endpoint != "static"
-        }, 200
-
-
-class Home(BaseMediaResource):
-    def get(self):
-        routes = self.get_routes()
+        }
         return routes, 200
 
 
-class TrendingMedia(BaseMediaResource):
+class TrendingMedia(Resource):
     def get(self):
-        media = self.scraper.by_trending()
-        return media, 200
+        result = _scraper.by_trending()
+        status = 200 if "media" in result else 502
+        return result, status
 
 
-class RecommendationMedia(BaseMediaResource):
+class RecommendationMedia(Resource):
     def get(self):
-        """Get the recommendation media."""
-        media = self.scraper.by_recommendation()
-        return media, 200
+        result = _scraper.by_recommendation()
+        status = 200 if "media" in result else 502
+        return result, status
 
 
-class SearchMediaByName(BaseMediaResource):
+class SearchMediaByName(Resource):
     def get(self):
         name = request.args.get("name", default="").strip()
         if not name:
             return {"error": "name is required"}, 400
-        media = self.scraper.by_name(name)
-        return media, 200
+        result = _scraper.by_name(name)
+        status = 200 if "media" in result else 502
+        return result, status
