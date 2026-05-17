@@ -5,17 +5,29 @@ This is a basic fmovies api that allows you to search for movies and tv shows an
 ## Requirements
 
 - Python 3.9
-- pip
+- uv
 - gunicorn
 
 
 ## Installation 
 
-    pip install -r requirements.txt
+```bash
+uv sync
+```
+
+## Configuration
+
+Copy the example env file and adjust the values:
+
+```bash
+cp .env.example .env
+```
 
 ## Usage
 
-    gunicorn --reload app:app
+```bash
+uv run gunicorn --reload app:app
+```
 
 ## Endpoints
 
